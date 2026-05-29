@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  View, Text, FlatList, StyleSheet,
+  View, Text, ScrollView, StyleSheet,
   TouchableOpacity, Alert, ActivityIndicator
 } from 'react-native';
 import { getProducts } from '../api/client';
@@ -33,7 +33,6 @@ export default function ProductsScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
         <View>
           <Text style={styles.headerTitle}>CartOne</Text>
@@ -52,7 +51,6 @@ export default function ProductsScreen({ navigation }) {
         </View>
       </View>
 
-      {/* Content */}
       {loading ? (
         <View style={styles.centered}>
           <ActivityIndicator size="large" color="#6C63FF" />
@@ -72,25 +70,18 @@ export default function ProductsScreen({ navigation }) {
           message="Check back later for new products."
         />
       ) : (
-        <FlatList
-          data={products}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <ProductCard product={item} />
-          )}
-          contentContainerStyle={styles.list}
-          showsVerticalScrollIndicator={false}
-        />
+        <ScrollView contentContainerStyle={styles.list}>
+          {products.map((item) => (
+            <ProductCard key={item.id.toString()} product={item} />
+          ))}
+        </ScrollView>
       )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
+  container: { flex: 1, backgroundColor: '#f5f5f5' },
   header: {
     backgroundColor: '#6C63FF',
     paddingTop: 56,
@@ -100,62 +91,26 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    color: 'rgba(255,255,255,0.8)',
-    marginTop: 2,
-  },
-  headerActions: {
-    alignItems: 'flex-end',
-    gap: 8,
-  },
+  headerTitle: { fontSize: 24, fontWeight: 'bold', color: '#fff' },
+  headerSubtitle: { fontSize: 14, color: 'rgba(255,255,255,0.8)', marginTop: 2 },
+  headerActions: { alignItems: 'flex-end', gap: 8 },
   cartButton: {
     backgroundColor: '#fff',
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: 20,
   },
-  cartButtonText: {
-    color: '#6C63FF',
-    fontWeight: 'bold',
-    fontSize: 14,
-  },
-  logoutText: {
-    color: 'rgba(255,255,255,0.8)',
-    fontSize: 12,
-  },
-  centered: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    marginTop: 12,
-    color: '#666',
-    fontSize: 14,
-  },
-  errorText: {
-    color: '#e74c3c',
-    fontSize: 16,
-    textAlign: 'center',
-    marginBottom: 16,
-  },
+  cartButtonText: { color: '#6C63FF', fontWeight: 'bold', fontSize: 14 },
+  logoutText: { color: 'rgba(255,255,255,0.8)', fontSize: 12 },
+  centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  loadingText: { marginTop: 12, color: '#666', fontSize: 14 },
+  errorText: { color: '#e74c3c', fontSize: 16, textAlign: 'center', marginBottom: 16 },
   retryButton: {
     backgroundColor: '#6C63FF',
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 8,
   },
-  retryText: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-  list: {
-    padding: 16,
-  },
+  retryText: { color: '#fff', fontWeight: 'bold' },
+  list: { padding: 16 },
 });

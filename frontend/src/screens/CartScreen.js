@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  View, Text, FlatList, StyleSheet,
+  View, Text, ScrollView, StyleSheet,
   TouchableOpacity, ActivityIndicator, Alert
 } from 'react-native';
 import { getCart, removeFromCart, updateCart } from '../api/client';
@@ -51,7 +51,6 @@ export default function CartScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Text style={styles.backButton}>← Back</Text>
@@ -81,40 +80,38 @@ export default function CartScreen({ navigation }) {
           onButtonPress={() => navigation.goBack()}
         />
       ) : (
-        <>
-          <FlatList
-            data={cart}
-            keyExtractor={(item) => item.productId.toString()}
-            renderItem={({ item }) => (
+        <View style={styles.flex}>
+          <ScrollView contentContainerStyle={styles.list}>
+            {cart.map((item) => (
               <CartItem
+                key={item.productId.toString()}
                 item={item}
                 onUpdate={handleUpdate}
                 onRemove={handleRemove}
               />
-            )}
-            contentContainerStyle={styles.list}
-            showsVerticalScrollIndicator={false}
-          />
+            ))}
+          </ScrollView>
           <View style={styles.footer}>
             <View style={styles.totalRow}>
               <Text style={styles.totalLabel}>Total</Text>
               <Text style={styles.totalAmount}>₹{total}</Text>
             </View>
-            <TouchableOpacity style={styles.checkoutButton}>
+            <TouchableOpacity
+              style={styles.checkoutButton}
+              onPress={() => navigation.navigate('OrderSummary', { items: cart, total })}
+            >
               <Text style={styles.checkoutText}>Proceed to Checkout</Text>
             </TouchableOpacity>
           </View>
-        </>
+        </View>
       )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f5f5f5',
-  },
+  container: { flex: 1, backgroundColor: '#f5f5f5' },
+  flex: { flex: 1 },
   header: {
     backgroundColor: '#6C63FF',
     paddingTop: 56,
@@ -124,45 +121,19 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  backButton: {
-    color: '#fff',
-    fontSize: 16,
-    width: 60,
-  },
-  headerTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    color: '#fff',
-  },
-  centered: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    marginTop: 12,
-    color: '#666',
-    fontSize: 14,
-  },
-  errorText: {
-    color: '#e74c3c',
-    fontSize: 16,
-    textAlign: 'center',
-    marginBottom: 16,
-  },
+  backButton: { color: '#fff', fontSize: 16, width: 60 },
+  headerTitle: { fontSize: 20, fontWeight: 'bold', color: '#fff' },
+  centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  loadingText: { marginTop: 12, color: '#666', fontSize: 14 },
+  errorText: { color: '#e74c3c', fontSize: 16, textAlign: 'center', marginBottom: 16 },
   retryButton: {
     backgroundColor: '#6C63FF',
     paddingHorizontal: 24,
     paddingVertical: 12,
     borderRadius: 8,
   },
-  retryText: {
-    color: '#fff',
-    fontWeight: 'bold',
-  },
-  list: {
-    padding: 16,
-  },
+  retryText: { color: '#fff', fontWeight: 'bold' },
+  list: { padding: 16 },
   footer: {
     backgroundColor: '#fff',
     padding: 24,
@@ -174,25 +145,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     marginBottom: 16,
   },
-  totalLabel: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  totalAmount: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#6C63FF',
-  },
+  totalLabel: { fontSize: 18, fontWeight: 'bold', color: '#333' },
+  totalAmount: { fontSize: 18, fontWeight: 'bold', color: '#6C63FF' },
   checkoutButton: {
     backgroundColor: '#6C63FF',
     borderRadius: 12,
     padding: 16,
     alignItems: 'center',
   },
-  checkoutText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
+  checkoutText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
 });
