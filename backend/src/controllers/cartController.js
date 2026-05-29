@@ -1,4 +1,4 @@
-const { Cart, Product } = require('../data/seed');
+const { Cart, Product } = require("../data/seed");
 
 // GET /cart
 const getCart = async (req, res) => {
@@ -8,7 +8,7 @@ const getCart = async (req, res) => {
     if (!cart || cart.items.length === 0) {
       return res.status(200).json({
         success: true,
-        message: 'Your cart is empty.',
+        message: "Your cart is empty.",
         items: [],
         total: 0,
       });
@@ -29,6 +29,7 @@ const getCart = async (req, res) => {
           price: product.price,
           image: product.image,
           quantity: item.quantity,
+          stock: product.stock,
           lineTotal,
         });
       }
@@ -55,14 +56,14 @@ const addToCart = async (req, res) => {
     if (!productId || !quantity) {
       return res.status(400).json({
         success: false,
-        message: 'Please provide productId and quantity.',
+        message: "Please provide productId and quantity.",
       });
     }
 
     if (quantity < 1) {
       return res.status(400).json({
         success: false,
-        message: 'Quantity must be at least 1.',
+        message: "Quantity must be at least 1.",
       });
     }
 
@@ -97,7 +98,9 @@ const addToCart = async (req, res) => {
     }
 
     // Check if item already in cart
-    const existingItem = cart.items.find(item => item.productId === productId);
+    const existingItem = cart.items.find(
+      (item) => item.productId === productId,
+    );
 
     if (existingItem) {
       const newQuantity = existingItem.quantity + quantity;
@@ -134,7 +137,7 @@ const updateCart = async (req, res) => {
     if (!productId || quantity === undefined) {
       return res.status(400).json({
         success: false,
-        message: 'Please provide productId and quantity.',
+        message: "Please provide productId and quantity.",
       });
     }
 
@@ -150,11 +153,13 @@ const updateCart = async (req, res) => {
     if (!cart) {
       return res.status(404).json({
         success: false,
-        message: 'Cart not found.',
+        message: "Cart not found.",
       });
     }
 
-    const itemIndex = cart.items.findIndex(item => item.productId === productId);
+    const itemIndex = cart.items.findIndex(
+      (item) => item.productId === productId,
+    );
     if (itemIndex === -1) {
       return res.status(404).json({
         success: false,
@@ -211,11 +216,13 @@ const removeFromCart = async (req, res) => {
     if (!cart) {
       return res.status(404).json({
         success: false,
-        message: 'Cart not found.',
+        message: "Cart not found.",
       });
     }
 
-    const itemIndex = cart.items.findIndex(item => item.productId === productId);
+    const itemIndex = cart.items.findIndex(
+      (item) => item.productId === productId,
+    );
     if (itemIndex === -1) {
       return res.status(404).json({
         success: false,
@@ -238,4 +245,24 @@ const removeFromCart = async (req, res) => {
   }
 };
 
-module.exports = { getCart, addToCart, updateCart, removeFromCart };
+// DELETE /cart/clear
+const clearCart = async (req, res) => {
+  try {
+    const cart = await Cart.findOne({ userId: req.user.id });
+    if (cart) {
+      cart.items = [];
+      await cart.save();
+    }
+    res.status(200).json({
+      success: true,
+      message: "Cart cleared successfully.",
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: `Server error: ${error.message}`,
+    });
+  }
+};
+
+module.exports = { getCart, addToCart, updateCart, removeFromCart, clearCart };

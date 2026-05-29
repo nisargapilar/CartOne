@@ -1,17 +1,40 @@
-import React from 'react';
+import React from "react";
+import { clearCart } from "../api/client";
 import {
-  View, Text, FlatList, TouchableOpacity, StyleSheet, Alert
-} from 'react-native';
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  StyleSheet,
+  Alert,
+  Platform,
+} from "react-native";
 
 export default function OrderSummaryScreen({ navigation, route }) {
   const { items, total } = route.params;
 
-  const handlePlaceOrder = () => {
-    Alert.alert(
-      'Order Placed!',
-      'Your order has been placed successfully.',
-      [{ text: 'OK', onPress: () => navigation.navigate('Products') }]
-    );
+  import { Platform } from "react-native";
+
+  const handlePlaceOrder = async () => {
+    try {
+      await clearCart();
+      if (Platform.OS === "web") {
+        window.alert("Order placed successfully!");
+        navigation.navigate("Products");
+      } else {
+        Alert.alert(
+          "Order Placed!",
+          "Your order has been placed successfully.",
+          [{ text: "OK", onPress: () => navigation.navigate("Products") }],
+        );
+      }
+    } catch (error) {
+      if (Platform.OS === "web") {
+        window.alert("Failed to place order. Please try again.");
+      } else {
+        Alert.alert("Error", "Failed to place order. Please try again.");
+      }
+    }
   };
 
   return (
@@ -44,7 +67,10 @@ export default function OrderSummaryScreen({ navigation, route }) {
           <Text style={styles.totalLabel}>Total</Text>
           <Text style={styles.totalAmount}>₹{total}</Text>
         </View>
-        <TouchableOpacity style={styles.placeOrderButton} onPress={handlePlaceOrder}>
+        <TouchableOpacity
+          style={styles.placeOrderButton}
+          onPress={handlePlaceOrder}
+        >
           <Text style={styles.placeOrderText}>Place Order</Text>
         </TouchableOpacity>
       </View>
@@ -53,51 +79,51 @@ export default function OrderSummaryScreen({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f5f5f5' },
+  container: { flex: 1, backgroundColor: "#f5f5f5" },
   header: {
-    backgroundColor: '#6C63FF',
+    backgroundColor: "#6C63FF",
     paddingTop: 56,
     paddingBottom: 16,
     paddingHorizontal: 24,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
-  backButton: { color: '#fff', fontSize: 16, width: 60 },
-  headerTitle: { fontSize: 20, fontWeight: 'bold', color: '#fff' },
+  backButton: { color: "#fff", fontSize: 16, width: 60 },
+  headerTitle: { fontSize: 20, fontWeight: "bold", color: "#fff" },
   list: { padding: 16 },
   row: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 12,
     padding: 16,
     marginBottom: 12,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     elevation: 1,
   },
   rowLeft: { flex: 1 },
-  name: { fontSize: 16, fontWeight: 'bold', color: '#333' },
-  qty: { fontSize: 13, color: '#666', marginTop: 4 },
-  lineTotal: { fontSize: 16, fontWeight: 'bold', color: '#6C63FF' },
+  name: { fontSize: 16, fontWeight: "bold", color: "#333" },
+  qty: { fontSize: 13, color: "#666", marginTop: 4 },
+  lineTotal: { fontSize: 16, fontWeight: "bold", color: "#6C63FF" },
   footer: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 24,
     borderTopWidth: 1,
-    borderTopColor: '#e0e0e0',
+    borderTopColor: "#e0e0e0",
   },
   totalRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 16,
   },
-  totalLabel: { fontSize: 18, fontWeight: 'bold', color: '#333' },
-  totalAmount: { fontSize: 18, fontWeight: 'bold', color: '#6C63FF' },
+  totalLabel: { fontSize: 18, fontWeight: "bold", color: "#333" },
+  totalAmount: { fontSize: 18, fontWeight: "bold", color: "#6C63FF" },
   placeOrderButton: {
-    backgroundColor: '#27ae60',
+    backgroundColor: "#27ae60",
     borderRadius: 12,
     padding: 16,
-    alignItems: 'center',
+    alignItems: "center",
   },
-  placeOrderText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
+  placeOrderText: { color: "#fff", fontSize: 16, fontWeight: "bold" },
 });

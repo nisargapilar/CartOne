@@ -17,21 +17,21 @@ A full-stack shopping cart application built with React Native (Expo) and Node.j
 
 CartOne/
 ├── backend/
-│   ├── src/
-│   │   ├── controllers/
-│   │   ├── data/
-│   │   ├── db/
-│   │   ├── middleware/
-│   │   └── routes/
-│   └── server.js
+│ ├── src/
+│ │ ├── controllers/
+│ │ ├── data/
+│ │ ├── db/
+│ │ ├── middleware/
+│ │ └── routes/
+│ └── server.js
 ├── frontend/
-│   ├── src/
-│   │   ├── api/
-│   │   ├── components/
-│   │   ├── context/
-│   │   ├── navigation/
-│   │   └── screens/
-│   └── App.js
+│ ├── src/
+│ │ ├── api/
+│ │ ├── components/
+│ │ ├── context/
+│ │ ├── navigation/
+│ │ └── screens/
+│ └── App.js
 └── README.md
 
 ---
@@ -71,7 +71,7 @@ npm install
 Open `src/api/client.js` and update the `BASE_URL` to your machine's local IP:
 
 ```js
-const BASE_URL = 'http://YOUR_LOCAL_IP:5000';
+const BASE_URL = "http://YOUR_LOCAL_IP:5000";
 ```
 
 Run the frontend:
@@ -88,25 +88,25 @@ To run on mobile, install **Expo Go** on your phone and scan the QR code.
 
 ## Environment Variables
 
-| Variable | Description |
-|---|---|
-| `PORT` | Port the backend server runs on |
-| `MONGO_URI` | MongoDB Atlas connection string |
+| Variable     | Description                        |
+| ------------ | ---------------------------------- |
+| `PORT`       | Port the backend server runs on    |
+| `MONGO_URI`  | MongoDB Atlas connection string    |
 | `JWT_SECRET` | Secret key used to sign JWT tokens |
 
 ---
 
 ## API Endpoints
 
-| Method | Route | Description |
-|---|---|---|
-| POST | /auth/register | Register a new user |
-| POST | /auth/login | Login and receive JWT token |
-| GET | /products | Get all products |
-| GET | /cart | Get current user's cart |
-| POST | /cart/add | Add item to cart |
-| PATCH | /cart/update | Update item quantity |
-| DELETE | /cart/remove/:productId | Remove item from cart |
+| Method | Route                   | Description                 |
+| ------ | ----------------------- | --------------------------- |
+| POST   | /auth/register          | Register a new user         |
+| POST   | /auth/login             | Login and receive JWT token |
+| GET    | /products               | Get all products            |
+| GET    | /cart                   | Get current user's cart     |
+| POST   | /cart/add               | Add item to cart            |
+| PATCH  | /cart/update            | Update item quantity        |
+| DELETE | /cart/remove/:productId | Remove item from cart       |
 
 ---
 
@@ -141,13 +141,12 @@ To run on mobile, install **Expo Go** on your phone and scan the QR code.
 
 ## What I'd Improve With More Time
 
-- Add quantity validation on frontend to disable `+` button at stock limit
 - Add search and filter functionality on the products screen
 - Implement proper order history stored in the database
 - Add real payment gateway integration (Razorpay or Stripe)
 - Deploy backend to Railway or Render and frontend to Expo EAS
-- Add unit tests for API endpoints
 - Improve mobile responsiveness and add animations
+- Add the number on cart button saying the number of items present
 
 ---
 
