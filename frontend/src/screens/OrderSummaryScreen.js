@@ -1,5 +1,4 @@
 import React from "react";
-import { clearCart } from "../api/client";
 import {
   View,
   Text,
@@ -9,11 +8,10 @@ import {
   Alert,
   Platform,
 } from "react-native";
+import { clearCart } from "../api/client";
 
 export default function OrderSummaryScreen({ navigation, route }) {
   const { items, total } = route.params;
-
-  import { Platform } from "react-native";
 
   const handlePlaceOrder = async () => {
     try {
