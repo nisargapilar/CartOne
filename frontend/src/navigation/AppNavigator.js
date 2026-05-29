@@ -8,6 +8,7 @@ import LoginScreen from '../screens/LoginScreen';
 import RegisterScreen from '../screens/RegisterScreen';
 import ProductsScreen from '../screens/ProductsScreen';
 import CartScreen from '../screens/CartScreen';
+import OrderSummaryScreen from '../screens/OrderSummaryScreen';
 
 const Stack = createStackNavigator();
 
@@ -29,6 +30,7 @@ export default function AppNavigator() {
           <>
             <Stack.Screen name="Products" component={ProductsScreen} />
             <Stack.Screen name="Cart" component={CartScreen} />
+            <Stack.Screen name="OrderSummary" component={OrderSummaryScreen} />
           </>
         ) : (
           <>
