@@ -1,33 +1,51 @@
 import React, { useState, useEffect } from 'react';
 import {
   View, Text, FlatList, StyleSheet,
-  TouchableOpacity, Alert, ActivityIndicator
+  TouchableOpacity, ActivityIndicator, Alert
 } from 'react-native';
-import { getProducts } from '../api/client';
-import { useAuth } from '../context/AuthContext';
-import ProductCard from '../components/ProductCard';
+import { getCart, removeFromCart, updateCart } from '../api/client';
+import CartItem from '../components/CartItem';
 import EmptyState from '../components/EmptyState';
 
-export default function ProductsScreen({ navigation }) {
-  const { logout, user } = useAuth();
-  const [products, setProducts] = useState([]);
+export default function CartScreen({ navigation }) {
+  const [cart, setCart] = useState([]);
+  const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchProducts();
+    fetchCart();
   }, []);
 
-  const fetchProducts = async () => {
+  const fetchCart = async () => {
     try {
       setLoading(true);
       setError(null);
-      const res = await getProducts();
-      setProducts(res.data.products);
+      const res = await getCart();
+      setCart(res.data.items);
+      setTotal(res.data.total);
     } catch (error) {
-      setError('Failed to load products. Please try again.');
+      setError('Failed to load cart. Please try again.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleUpdate = async (productId, quantity) => {
+    try {
+      await updateCart(productId, quantity);
+      fetchCart();
+    } catch (error) {
+      Alert.alert('Error', error.response?.data?.message || 'Failed to update cart.');
+    }
+  };
+
+  const handleRemove = async (productId) => {
+    try {
+      await removeFromCart(productId);
+      fetchCart();
+    } catch (error) {
+      Alert.alert('Error', error.response?.data?.message || 'Failed to remove item.');
     }
   };
 
@@ -35,52 +53,58 @@ export default function ProductsScreen({ navigation }) {
     <View style={styles.container}>
       {/* Header */}
       <View style={styles.header}>
-        <View>
-          <Text style={styles.headerTitle}>CartOne</Text>
-          <Text style={styles.headerSubtitle}>Hi, {user?.name} 👋</Text>
-        </View>
-        <View style={styles.headerActions}>
-          <TouchableOpacity
-            style={styles.cartButton}
-            onPress={() => navigation.navigate('Cart')}
-          >
-            <Text style={styles.cartButtonText}>🛒 Cart</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={logout}>
-            <Text style={styles.logoutText}>Logout</Text>
-          </TouchableOpacity>
-        </View>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
+          <Text style={styles.backButton}>← Back</Text>
+        </TouchableOpacity>
+        <Text style={styles.headerTitle}>My Cart</Text>
+        <View style={{ width: 60 }} />
       </View>
 
-      {/* Content */}
       {loading ? (
         <View style={styles.centered}>
           <ActivityIndicator size="large" color="#6C63FF" />
-          <Text style={styles.loadingText}>Loading products...</Text>
+          <Text style={styles.loadingText}>Loading cart...</Text>
         </View>
       ) : error ? (
         <View style={styles.centered}>
           <Text style={styles.errorText}>{error}</Text>
-          <TouchableOpacity style={styles.retryButton} onPress={fetchProducts}>
+          <TouchableOpacity style={styles.retryButton} onPress={fetchCart}>
             <Text style={styles.retryText}>Retry</Text>
           </TouchableOpacity>
         </View>
-      ) : products.length === 0 ? (
+      ) : cart.length === 0 ? (
         <EmptyState
-          icon="📦"
-          title="No Products Found"
-          message="Check back later for new products."
+          icon="🛒"
+          title="Your Cart is Empty"
+          message="Browse products and add items to your cart."
+          buttonText="Shop Now"
+          onButtonPress={() => navigation.goBack()}
         />
       ) : (
-        <FlatList
-          data={products}
-          keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => (
-            <ProductCard product={item} />
-          )}
-          contentContainerStyle={styles.list}
-          showsVerticalScrollIndicator={false}
-        />
+        <>
+          <FlatList
+            data={cart}
+            keyExtractor={(item) => item.productId.toString()}
+            renderItem={({ item }) => (
+              <CartItem
+                item={item}
+                onUpdate={handleUpdate}
+                onRemove={handleRemove}
+              />
+            )}
+            contentContainerStyle={styles.list}
+            showsVerticalScrollIndicator={false}
+          />
+          <View style={styles.footer}>
+            <View style={styles.totalRow}>
+              <Text style={styles.totalLabel}>Total</Text>
+              <Text style={styles.totalAmount}>₹{total}</Text>
+            </View>
+            <TouchableOpacity style={styles.checkoutButton}>
+              <Text style={styles.checkoutText}>Proceed to Checkout</Text>
+            </TouchableOpacity>
+          </View>
+        </>
       )}
     </View>
   );
@@ -100,34 +124,15 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
+  backButton: {
+    color: '#fff',
+    fontSize: 16,
+    width: 60,
+  },
   headerTitle: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#fff',
-  },
-  headerSubtitle: {
-    fontSize: 14,
-    color: 'rgba(255,255,255,0.8)',
-    marginTop: 2,
-  },
-  headerActions: {
-    alignItems: 'flex-end',
-    gap: 8,
-  },
-  cartButton: {
-    backgroundColor: '#fff',
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 20,
-  },
-  cartButtonText: {
-    color: '#6C63FF',
-    fontWeight: 'bold',
-    fontSize: 14,
-  },
-  logoutText: {
-    color: 'rgba(255,255,255,0.8)',
-    fontSize: 12,
   },
   centered: {
     flex: 1,
@@ -157,5 +162,37 @@ const styles = StyleSheet.create({
   },
   list: {
     padding: 16,
+  },
+  footer: {
+    backgroundColor: '#fff',
+    padding: 24,
+    borderTopWidth: 1,
+    borderTopColor: '#e0e0e0',
+  },
+  totalRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
+  totalLabel: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  totalAmount: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#6C63FF',
+  },
+  checkoutButton: {
+    backgroundColor: '#6C63FF',
+    borderRadius: 12,
+    padding: 16,
+    alignItems: 'center',
+  },
+  checkoutText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
