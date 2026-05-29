@@ -15,24 +15,26 @@ A full-stack shopping cart application built with React Native (Expo) and Node.j
 
 ## Project Structure
 
+```
 CartOne/
 ├── backend/
-│ ├── src/
-│ │ ├── controllers/
-│ │ ├── data/
-│ │ ├── db/
-│ │ ├── middleware/
-│ │ └── routes/
-│ └── server.js
+│   ├── src/
+│   │   ├── controllers/
+│   │   ├── data/
+│   │   ├── db/
+│   │   ├── middleware/
+│   │   └── routes/
+│   └── server.js
 ├── frontend/
-│ ├── src/
-│ │ ├── api/
-│ │ ├── components/
-│ │ ├── context/
-│ │ ├── navigation/
-│ │ └── screens/
-│ └── App.js
+│   ├── src/
+│   │   ├── api/
+│   │   ├── components/
+│   │   ├── context/
+│   │   ├── navigation/
+│   │   └── screens/
+│   └── App.js
 └── README.md
+```
 
 ---
 
@@ -128,11 +130,13 @@ To run on mobile, install **Expo Go** on your phone and scan the QR code.
 - ✅ Cart persisted in MongoDB — survives page refresh
 - ✅ Loading and error states on every API call
 - ✅ Order summary screen with Place Order button
+- ✅ Quantity validation — + button disabled at stock limit
 
 ---
 
 ## Known Limitations
 
+- Expo Go incompatible with SDK 56 — tested via npx expo start --web
 - No real payment integration (Place Order clears cart only)
 - Images are loaded from Unsplash URLs — requires internet connection
 - Frontend IP address needs to be updated manually when network changes
